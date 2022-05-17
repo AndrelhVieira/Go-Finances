@@ -4,11 +4,11 @@ import Input from "../Input";
 
 import { Props } from "./interface";
 
-import { Container } from "./styles";
+import { Container, Error } from "./styles";
 
 import { Controller } from "react-hook-form";
 
-const InputForm = ({ control, name, ...rest }: Props) => {
+const InputForm = ({ control, name, error, ...rest }: Props) => {
   return (
     <Container>
       <Controller
@@ -18,6 +18,7 @@ const InputForm = ({ control, name, ...rest }: Props) => {
           <Input onChangeText={onChange} value={value} {...rest} />
         )}
       />
+      {error ? <Error>{error}</Error> : null}
     </Container>
   );
 };
