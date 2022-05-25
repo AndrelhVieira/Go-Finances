@@ -12,19 +12,21 @@ import {
 } from "./styled";
 
 import { Props } from "./interface";
+import { categories } from "../../utils/categories";
 
 const TransactionCard = ({ data }: Props) => {
+  const [category] = categories.filter((item) => item.key === data.category);
   return (
     <Container>
-      <Title>{data.title}</Title>
+      <Title>{data.name}</Title>
       <Amount type={data.type}>
         {data.type === "negative" ? "- " : null}
         {data.amount}
       </Amount>
       <Footer>
         <Category>
-          <Icon name={data.category.icon} />
-          <CategoryName>{data.category.name}</CategoryName>
+          <Icon name={category.icon} />
+          <CategoryName>{category.name}</CategoryName>
         </Category>
         <Date>{data.date}</Date>
       </Footer>
