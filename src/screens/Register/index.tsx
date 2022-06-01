@@ -33,6 +33,7 @@ import {
 } from "@react-navigation/core";
 
 import { FormData } from "./interface";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const schema = Yup.object().shape({
   name: Yup.string().required("O nome é obrigatório"),
@@ -62,7 +63,7 @@ const Register = () => {
     resolver: yupResolver(schema),
   });
 
-  const handleTransactionTypeSelect = (type: "up" | "down") => {
+  const handleTransactionTypeSelect = (type: "positive" | "negative") => {
     setTransactionType(type);
   };
 
@@ -87,7 +88,7 @@ const Register = () => {
       id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
+      type: transactionType,
       category: category.key,
       date: new Date().getTime(),
     };
@@ -140,27 +141,31 @@ const Register = () => {
               keyboardType="numeric"
               error={errors.amount ? errors.amount.message : null}
             />
-            <TransactionTypes>
-              <TransactionTypeButton
-                title="Income"
-                type="up"
-                isActive={transactionType === "up"}
-                onPress={() => handleTransactionTypeSelect("up")}
-              />
-              <TransactionTypeButton
-                title="Outcome"
-                type="down"
-                isActive={transactionType === "down"}
-                onPress={() => handleTransactionTypeSelect("down")}
-              />
-            </TransactionTypes>
+            <GestureHandlerRootView>
+              <TransactionTypes>
+                <TransactionTypeButton
+                  title="Income"
+                  type="up"
+                  isActive={transactionType === "positive"}
+                  onPress={() => handleTransactionTypeSelect("positive")}
+                />
+                <TransactionTypeButton
+                  title="Outcome"
+                  type="down"
+                  isActive={transactionType === "negative"}
+                  onPress={() => handleTransactionTypeSelect("negative")}
+                />
+              </TransactionTypes>
+            </GestureHandlerRootView>
             <CategorySelectButton
               title={category.name}
               onPress={handleOpenSelectCategoryModal}
             />
           </Fields>
 
-          <Button title="Enviar" onPress={handleSubmit(handleRegister)} />
+          <GestureHandlerRootView>
+            <Button title="Enviar" onPress={handleSubmit(handleRegister)} />
+          </GestureHandlerRootView>
         </Form>
 
         <Modal visible={categoryModalOpen}>

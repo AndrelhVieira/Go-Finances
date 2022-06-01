@@ -21,7 +21,11 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import { AppRoutes } from "./src/routes/app.routes";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import SignIn from "./src/screens/SignIn";
+
+import { StatusBar } from "react-native";
+
+import { AuthProvider } from "./src/hooks/auth";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -34,13 +38,14 @@ const App = () => {
     return <AppLoading />;
   }
 
-  // just for clear the storage
-  // AsyncStorage.clear();
-
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <AppRoutes />
+        <StatusBar barStyle="light-content" />
+        <AuthProvider>
+          {/* <AppRoutes /> */}
+          <SignIn />
+        </AuthProvider>
       </NavigationContainer>
     </ThemeProvider>
   );
