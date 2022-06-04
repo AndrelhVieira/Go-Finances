@@ -34,6 +34,7 @@ import {
 
 import { FormData } from "./interface";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useAuth } from "../../hooks/auth";
 
 const schema = Yup.object().shape({
   name: Yup.string().required("O nome é obrigatório"),
@@ -46,6 +47,7 @@ const schema = Yup.object().shape({
 const Register = () => {
   const [transactionType, setTransactionType] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const { user } = useAuth();
 
   const [category, setCategory] = useState({
     key: "category",
@@ -94,7 +96,7 @@ const Register = () => {
     };
 
     try {
-      const dataKey = "@gofinances:transactions";
+      const dataKey = `@gofinances:transactions_user:${user.id}`;
 
       const data = await AsyncStorage.getItem(dataKey);
       const currentData = data ? JSON.parse(data) : [];
@@ -144,13 +146,13 @@ const Register = () => {
             <GestureHandlerRootView>
               <TransactionTypes>
                 <TransactionTypeButton
-                  title="Income"
+                  title="Entrada"
                   type="up"
                   isActive={transactionType === "positive"}
                   onPress={() => handleTransactionTypeSelect("positive")}
                 />
                 <TransactionTypeButton
-                  title="Outcome"
+                  title="Saída"
                   type="down"
                   isActive={transactionType === "negative"}
                   onPress={() => handleTransactionTypeSelect("negative")}

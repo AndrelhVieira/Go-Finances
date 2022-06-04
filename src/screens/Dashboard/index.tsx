@@ -30,6 +30,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useFocusEffect } from "@react-navigation/core";
 import { useTheme } from "styled-components";
+import { useAuth } from "../../hooks/auth";
+import {
+  BaseButton,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState<DataListProps[]>();
@@ -41,16 +46,26 @@ const Dashboard = () => {
 
   const theme = useTheme();
 
+  const { user, signOut } = useAuth();
+
   function getLastTransactionDate(
     collection: DataListProps[],
     type: "positive" | "negative"
   ) {
+    const collectionFiltered = collection.filter(
+      (transaction) => transaction.type === type
+    );
+
+    if (collectionFiltered.length === 0) {
+      return 0;
+    }
+
     const lastTransaction = new Date(
       Math.max.apply(
         Math,
-        collection
-          .filter((transaction) => transaction.type === type)
-          .map((transaction) => new Date(transaction.date).getTime())
+        collectionFiltered.map((transaction) =>
+          new Date(transaction.date).getTime()
+        )
       )
     );
 
@@ -63,7 +78,7 @@ const Dashboard = () => {
   }
 
   async function loadTransactions() {
-    const dataKey = "@gofinances:transactions";
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
 
     const response = await AsyncStorage.getItem(dataKey);
 
@@ -112,7 +127,10 @@ const Dashboard = () => {
       transactions,
       "negative"
     );
-    const totalInterval = `01 a ${lastTransactionExepensives}`;
+    const totalInterval =
+      lastTransactionExepensives !== 0
+        ? `01 a ${lastTransactionExepensives}`
+        : "Não há transações";
 
     const total = entriesTotal - expensiveTotal;
 
@@ -122,14 +140,20 @@ const Dashboard = () => {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: `Última entrada dia ${lastTransactionEntries}`,
+        lastTransaction:
+          lastTransactionEntries !== 0
+            ? `Última entrada dia ${lastTransactionEntries}`
+            : "Não há transações",
       },
       expensives: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: `Última saída dia ${lastTransactionExepensives}`,
+        lastTransaction:
+          lastTransactionExepensives !== 0
+            ? `Última saída dia ${lastTransactionExepensives}`
+            : "Não há transações",
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
@@ -166,17 +190,19 @@ const Dashboard = () => {
               <UserInfo>
                 <Photo
                   source={{
-                    uri: "https://avatars.githubusercontent.com/u/63323085?v=4",
+                    uri: user.photo,
                   }}
                 />
                 <User>
                   <UserGreeting>Olá, </UserGreeting>
-                  <UserName>André</UserName>
+                  <UserName>{user.name}</UserName>
                 </User>
               </UserInfo>
-              <LogoutButton onPress={() => {}}>
-                <Icon name="power" />
-              </LogoutButton>
+              <GestureHandlerRootView>
+                <LogoutButton onPress={signOut}>
+                  <Icon name="power" />
+                </LogoutButton>
+              </GestureHandlerRootView>
             </UserWrapper>
           </Header>
           <HighlightCards>

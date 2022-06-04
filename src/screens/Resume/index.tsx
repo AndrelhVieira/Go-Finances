@@ -27,6 +27,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { addMonths, subMonths, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ActivityIndicator } from "react-native";
+import { useAuth } from "../../hooks/auth";
 
 export default function Resume() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +37,8 @@ export default function Resume() {
   );
 
   const theme = useTheme();
+
+  const { user } = useAuth();
 
   const bottomBar = useBottomTabBarHeight();
 
@@ -50,7 +53,7 @@ export default function Resume() {
   async function loadData() {
     setIsLoading(true);
 
-    const dataKey = "@gofinances:transactions";
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
 
     const response = await AsyncStorage.getItem(dataKey);
 
